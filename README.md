@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSCC QR-CODE GENERATOR</title>
+<title>Ufficial-QRCODE-Generator</title>
 <style>
 body { font-family: Arial,sans-serif; margin:0; padding:0; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; transition:background 0.3s,color 0.3s; }
 
 /* Tema chiaro */
 body.light { background:#ffffff; color:#ff7b00; }
 body.light .wrapper { background:#f5f5f5; }
-body.light .controls button, body.light .qty-btn, body.light .input-row button { background:#ff7b00; color:#fff; border:2px solid #ff7b00; }
-body.light .controls button:hover, body.light .qty-btn:hover, body.light .input-row button:hover { background:#fff; color:#ff7b00; }
+body.light .controls button, body.light .qty-btn, body.light .input-row button, body.light footer { background:#ff7b00; color:#fff; border:2px solid #ff7b00; }
+body.light .controls button:hover, body.light .qty-btn:hover, body.light .input-row button:hover, body.light footer:hover { background:#fff; color:#ff7b00; }
 
 /* Tema scuro */
 body.dark { background:#000000; color:#00a6ff; }
 body.dark .wrapper { background:#1b1b1b; }
-body.dark .controls button, body.dark .qty-btn, body.dark .input-row button { background:#0056ff; color:#fff; border:2px solid #0056ff; }
-body.dark .controls button:hover, body.dark .qty-btn:hover, body.dark .input-row button:hover { background:#000; color:#00a6ff; }
+body.dark .controls button, body.dark .qty-btn, body.dark .input-row button, body.dark footer { background:#0056ff; color:#fff; border:2px solid #0056ff; }
+body.dark .controls button:hover, body.dark .qty-btn:hover, body.dark .input-row button:hover, body.dark footer:hover { background:#000; color:#00a6ff; }
 
 .wrapper { display:flex; flex-wrap:wrap; gap:20px; max-width:900px; width:90%; padding:20px; border-radius:12px; box-shadow:0 3px 15px rgba(0,0,0,0.3); justify-content:center; align-items:flex-start; }
 .controls { flex:1 1 280px; display:flex; flex-direction:column; gap:10px; }
@@ -39,6 +39,7 @@ footer { width:100%; text-align:center; padding:10px 0; font-size:0.95rem; curso
 #dashboardContainer { display:none; padding:20px; max-width:900px; width:90%; background:#f8f8f8; border-radius:10px; }
 body.dark #dashboardContainer { background:#1b1b1b; color:#00a6ff; }
 #dashboardContent div { margin-bottom:5px; }
+
 </style>
 </head>
 <body class="light">
@@ -72,7 +73,7 @@ body.dark #dashboardContainer { background:#1b1b1b; color:#00a6ff; }
 
 </div>
 
-<footer id="themeToggle">Made with ❤️ by Shko 🌞 / 🌙  Thema wechseln</footer>
+<footer id="themeToggle">Ufficial-QRCODE-Generator 🌞 / 🌙  Thema wechseln</footer>
 
 <!-- Dashboard nascosta -->
 <div id="dashboardContainer">
@@ -174,7 +175,6 @@ function printQR(copies=1){
   let bodyHTML='';
   for(let i=0;i<copies;i++){
     bodyHTML+=`<div class="label"><img src="${qrSrc}"><div class="code">${codeText}</div></div>`;
-    // Salvataggio Firestore
     db.collection("printLogs").add({pcId:ssccInput.value, sscc:ssccInput.value, quantity:copies, timestamp:firebase.firestore.FieldValue.serverTimestamp()});
   }
   printWindow.document.write(`<html><head><title>Druck</title><style>@page{size:50mm 30mm;margin:0}body{margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;font-family:Arial,sans-serif}.label{width:50mm;height:30mm;display:flex;flex-direction:column;justify-content:center;align-items:center;page-break-inside:avoid;}img{width:40mm;height:40mm;}.code{font-size:9pt;font-weight:bold;margin-top:1mm;}</style></head><body>${bodyHTML}</body></html>`);
@@ -182,20 +182,22 @@ function printQR(copies=1){
 }
 
 /* -------- Eventi -------- */
-ssccInput.addEventListener('input', ()=>{ const val=ssccInput.value.trim(); if(val.length===18){ generateQR(val); } });
+ssccInput.addEventListener('input', ()=>{ 
+  const val=ssccInput.value.trim(); 
+  if(val) generateQR(val); // qualsiasi lunghezza
+});
 clearBtn.addEventListener('click', ()=>{ ssccInput.value=''; generateQR(''); });
 qtyButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const qty=parseInt(btn.dataset.count);
     const sscc=ssccInput.value.trim();
-    if(sscc.length!==18) return alert('SSCC non valido');
+    if(!sscc) return alert('Inserire il codice da stampare');
     generateQR(sscc);
     printQR(qty);
   });
 });
 
 /* -------- Dashboard -------- */
-document.addEventListener('keydown', e=>{ if(e.ctrlKey && e.key==='d'){ dashboardContainer.style.display='block'; document.querySelector('.wrapper').style.display='none'; } });
 loginBtn.addEventListener('click', ()=>{
   const email=document.getElementById('loginEmail').value;
   const pass=document.getElementById('loginPassword').value;
